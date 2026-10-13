@@ -2,3 +2,4 @@ out/_raw/
 out/_preview/
 preview.html
 node_modules/
+.claude/

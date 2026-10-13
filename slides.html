@@ -1,0 +1,662 @@
+<meta charset="utf-8">
+<title>Abdalla Tech — Carrossel Manutenção Preventiva</title>
+<style>
+:root{
+  --bg:#2B2E34;
+  --dk:#1E2126;
+  --dk2:#191B1F;
+  --lt:#383D45;
+  --lt2:#42474F;
+  --mint:#3DFFA0;
+  --mint-dim:#2BB673;
+  --txt:#E8EAEE;
+  --mut:#98A0AA;
+  --dim:#69707A;
+  --pad:88px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#15171A}
+body{
+  font-family:'Bahnschrift','DIN Alternate','Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;gap:40px;padding:40px 0;
+}
+body.solo{padding:0;gap:0}
+body.solo .slide{display:none}
+body.solo .slide.on{display:flex}
+
+.slide{
+  width:1080px;height:1350px;flex:none;
+  background:var(--bg);
+  padding:var(--pad) var(--pad) 68px;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+/* fundo perfeitamente chapado: a logo PNG tem o mesmo #2B2E34 e encaixa sem emenda */
+.slide>*{position:relative;z-index:1}
+
+/* ---------- tipografia ---------- */
+.kicker{
+  font-family:'Cascadia Mono','Consolas',monospace;
+  font-size:23px;letter-spacing:.30em;text-transform:uppercase;
+  color:var(--mint);display:flex;align-items:center;gap:18px;
+}
+.kicker .num{color:var(--dim)}
+.kicker .bar{flex:1;height:1px;background:linear-gradient(90deg,#3a3f47,rgba(58,63,71,0))}
+
+h1{
+  font-size:96px;line-height:.96;font-weight:700;font-stretch:87%;
+  letter-spacing:-.018em;text-transform:uppercase;color:var(--txt);
+  margin-top:38px;
+}
+h2{
+  font-size:74px;line-height:1.0;font-weight:700;font-stretch:87%;
+  letter-spacing:-.014em;text-transform:uppercase;color:var(--txt);
+  margin-top:30px;
+}
+h2.sm{font-size:62px}
+.mint{color:var(--mint)}
+.sub{
+  font-size:33px;line-height:1.45;font-weight:350;color:var(--mut);
+  margin-top:26px;max-width:830px;
+}
+.sub b{color:var(--txt);font-weight:600}
+
+/* ---------- neumorfismo ---------- */
+.raised{
+  background:linear-gradient(148deg,#30343B 0%,#262A30 100%);
+  border-radius:44px;
+  box-shadow:20px 20px 44px var(--dk2), -18px -18px 40px var(--lt);
+}
+.inset{
+  background:linear-gradient(148deg,#262A30 0%,#30343B 100%);
+  border-radius:44px;
+  box-shadow:inset 16px 16px 32px var(--dk2), inset -14px -14px 30px var(--lt);
+}
+
+/* ---------- palco da ilustracao ---------- */
+.stage{
+  flex:1;margin-top:44px;border-radius:48px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(148deg,#262A30 0%,#2F333A 100%);
+  box-shadow:inset 18px 18px 34px var(--dk2), inset -16px -16px 32px var(--lt);
+  overflow:hidden;position:relative;
+}
+/* a ilustracao ocupa o palco inteiro em vez de flutuar no meio */
+.stage svg{display:block;width:91%;height:91%}
+
+/* ---------- rodape ---------- */
+.foot{
+  margin-top:36px;display:flex;align-items:center;justify-content:space-between;
+}
+.foot img{height:52px;display:block;opacity:.92}
+.dots{display:flex;gap:10px;align-items:center}
+.dots i{width:9px;height:9px;border-radius:50%;background:#3A3F47;
+  box-shadow:inset 1px 1px 2px var(--dk2), inset -1px -1px 2px var(--lt2)}
+.dots i.on{background:var(--mint);box-shadow:0 0 12px rgba(61,255,160,.55)}
+.swipe{
+  font-family:'Cascadia Mono','Consolas',monospace;
+  font-size:21px;letter-spacing:.24em;text-transform:uppercase;color:var(--mint);
+  display:flex;align-items:center;gap:12px;
+}
+.swipe span{animation:none}
+
+/* ---------- listas ---------- */
+.rows{display:flex;flex-direction:column;gap:22px;margin-top:40px;flex:1;justify-content:center}
+.row{
+  display:flex;align-items:center;gap:28px;padding:26px 34px;border-radius:30px;
+  background:linear-gradient(148deg,#30343B 0%,#262A30 100%);
+  box-shadow:12px 12px 26px var(--dk2), -10px -10px 24px var(--lt);
+}
+.row .ic{flex:none;width:64px;height:64px;display:grid;place-items:center;
+  border-radius:20px;
+  background:linear-gradient(148deg,#262A30,#31353C);
+  box-shadow:inset 5px 5px 10px var(--dk2), inset -4px -4px 9px var(--lt2);}
+.row .tx{font-size:30px;line-height:1.3;color:var(--txt);font-weight:400}
+.row .tx small{display:block;font-size:25px;color:var(--mut);margin-top:5px;font-weight:350}
+
+/* ---------- slide 3 stat ---------- */
+.statline{display:flex;align-items:baseline;gap:22px;margin-top:34px}
+.statline .big{
+  font-size:130px;font-weight:700;font-stretch:82%;line-height:.85;
+  color:var(--mint);letter-spacing:-.03em;
+}
+.statline .lb{font-size:31px;color:var(--mut);line-height:1.25;max-width:330px}
+
+/* ---------- slide 6 versus ---------- */
+.vs{display:flex;gap:26px;margin-top:40px;flex:1}
+.col{
+  flex:1;border-radius:40px;padding:44px 36px;display:flex;flex-direction:column;
+  background:linear-gradient(148deg,#30343B 0%,#262A30 100%);
+  box-shadow:16px 16px 34px var(--dk2), -14px -14px 30px var(--lt);
+}
+.col .tag{
+  font-family:'Cascadia Mono','Consolas',monospace;font-size:20px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--dim);
+}
+.col.good .tag{color:var(--mint)}
+.col h3{
+  font-size:46px;font-weight:700;font-stretch:87%;text-transform:uppercase;
+  color:var(--txt);margin-top:14px;line-height:1;letter-spacing:-.01em;
+}
+.col ul{list-style:none;margin-top:30px;display:flex;flex-direction:column;gap:18px}
+.col li{font-size:26px;line-height:1.32;color:var(--mut);padding-left:32px;position:relative}
+.col li::before{
+  content:'';position:absolute;left:0;top:12px;width:12px;height:12px;border-radius:50%;
+  background:#4A505A;
+}
+.col.good li::before{background:var(--mint);box-shadow:0 0 10px rgba(61,255,160,.6)}
+.col .art{flex:1;display:flex;align-items:center;justify-content:center;padding-top:28px}
+.col .art svg{width:190px;height:190px}
+.vsnote{
+  margin-top:30px;text-align:center;font-size:29px;color:var(--mut);line-height:1.4;
+}
+.vsnote b{color:var(--txt);font-weight:600}
+
+/* ---------- slide 7 cta ---------- */
+.cta{
+  margin-top:34px;padding:40px 44px;border-radius:38px;display:flex;
+  align-items:center;gap:30px;
+  background:linear-gradient(148deg,#30343B 0%,#262A30 100%);
+  box-shadow:16px 16px 34px var(--dk2), -14px -14px 30px var(--lt),
+             inset 0 0 0 2px rgba(61,255,160,.16);
+}
+.cta .txt{font-size:31px;line-height:1.34;color:var(--txt)}
+.cta .txt b{color:var(--mint);font-weight:700}
+.cta .txt small{display:block;font-size:25px;color:var(--mut);margin-top:6px}
+</style>
+
+<!-- filtros neumorficos compartilhados -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="nm" x="-30%" y="-30%" width="160%" height="160%">
+    <feDropShadow dx="7" dy="7" stdDeviation="9" flood-color="#191B1F" flood-opacity=".95"/>
+    <feDropShadow dx="-6" dy="-6" stdDeviation="8" flood-color="#454A53" flood-opacity=".85"/>
+  </filter>
+  <filter id="nmS" x="-40%" y="-40%" width="180%" height="180%">
+    <feDropShadow dx="4" dy="4" stdDeviation="5" flood-color="#191B1F" flood-opacity=".95"/>
+    <feDropShadow dx="-3" dy="-3" stdDeviation="4" flood-color="#454A53" flood-opacity=".8"/>
+  </filter>
+  <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+    <feGaussianBlur stdDeviation="9" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.4"/></filter>
+  <linearGradient id="slat" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4E545E"/><stop offset="1" stop-color="#2A2E34"/>
+  </linearGradient>
+  <linearGradient id="steel" x1="0" y1="0" x2="0.5" y2="1">
+    <stop offset="0" stop-color="#3A3F47"/><stop offset="1" stop-color="#23262B"/>
+  </linearGradient>
+  <linearGradient id="steel2" x1="0" y1="0" x2="0.4" y2="1">
+    <stop offset="0" stop-color="#333840"/><stop offset="1" stop-color="#1F2226"/>
+  </linearGradient>
+  <linearGradient id="case" x1="0" y1="0" x2="0.35" y2="1">
+    <stop offset="0" stop-color="#474D57"/><stop offset="1" stop-color="#282C32"/>
+  </linearGradient>
+  <linearGradient id="case2" x1="0" y1="0" x2="0.2" y2="1">
+    <stop offset="0" stop-color="#3E434C"/><stop offset="1" stop-color="#23262B"/>
+  </linearGradient>
+  <linearGradient id="mintFade" x1="0" y1="1" x2="0" y2="0">
+    <stop offset="0" stop-color="#3DFFA0" stop-opacity=".55"/>
+    <stop offset="1" stop-color="#3DFFA0" stop-opacity="0"/>
+  </linearGradient>
+</defs></svg>
+
+
+<!-- ==================== 1 · CAPA ==================== -->
+<section class="slide" data-n="1">
+  <div class="kicker"><span>Manutenção preventiva</span><i class="bar"></i></div>
+  <h1>Seu notebook<br>não quebra<br>do nada.</h1>
+  <p class="sub">Ele te avisa por meses. <b>Você só não escuta.</b></p>
+
+  <div class="stage">
+    <svg width="540" height="500" viewBox="166 -14 528 496">
+      <!-- ondas de calor saindo por tras da tampa -->
+      <g fill="none" stroke-linecap="round" stroke-width="5">
+        <path d="M330 148 C314 116 348 100 332 68 C320 44 344 30 333 10" stroke="#3DFFA0" stroke-opacity=".20"/>
+        <path d="M404 142 C388 108 424 92 407 60 C394 36 420 22 408 4"  stroke="#3DFFA0" stroke-opacity=".38"/>
+        <path d="M478 150 C462 118 496 102 480 70 C468 46 492 32 481 12" stroke="#3DFFA0" stroke-opacity=".24"/>
+        <path d="M552 156 C538 126 570 112 556 82"                      stroke="#3DFFA0" stroke-opacity=".14"/>
+      </g>
+      <!-- poeira em suspensao -->
+      <g fill="#AEB5BE">
+        <circle cx="288" cy="104" r="3.6" opacity=".55"/><circle cx="366" cy="58"  r="2.6" opacity=".45"/>
+        <circle cx="452" cy="96"  r="4.2" opacity=".6"/> <circle cx="528" cy="52"  r="2.8" opacity=".4"/>
+        <circle cx="596" cy="118" r="3.2" opacity=".45"/><circle cx="262" cy="46"  r="2.4" opacity=".32"/>
+        <circle cx="636" cy="72"  r="2.6" opacity=".3"/> <circle cx="392" cy="122" r="2.6" opacity=".42"/>
+        <circle cx="512" cy="132" r="2.2" opacity=".35"/>
+      </g>
+
+      <!-- ===== tampa ===== -->
+      <g filter="url(#nm)">
+        <rect x="258" y="150" width="344" height="212" rx="18" fill="url(#case)"/>
+      </g>
+      <rect x="258.5" y="150.5" width="343" height="211" rx="17.5" fill="none" stroke="#565C66" stroke-opacity=".55" stroke-width="1.6"/>
+      <rect x="274" y="166" width="312" height="176" rx="9" fill="#15171A"/>
+      <rect x="274" y="166" width="312" height="176" rx="9" fill="url(#mintFade)" opacity=".10"/>
+      <!-- reflexo diagonal na tela -->
+      <path d="M274 300 L360 166 L410 166 L282 342 Z" fill="#FFFFFF" opacity=".022"/>
+
+      <!-- ===== base ===== -->
+      <g filter="url(#nm)">
+        <path d="M266 362 L594 362 Q604 362 608 370 L668 428 Q676 436 664 436 L196 436 Q184 436 192 428 L252 370 Q256 362 266 362 Z" fill="url(#case2)"/>
+      </g>
+      <path d="M266 363 L594 363" stroke="#5A6069" stroke-opacity=".5" stroke-width="1.6"/>
+      <!-- deck rebaixado -->
+      <path d="M286 380 L574 380 L620 420 L240 420 Z" fill="#242830" opacity=".8"/>
+      <rect x="386" y="396" width="88" height="18" rx="6" fill="#1C1F24"/>
+
+      <!-- ===== saida de ar na lateral da base, entupida e brilhando ===== -->
+      <ellipse cx="258" cy="404" rx="122" ry="48" fill="#3DFFA0" opacity=".12" filter="url(#blur6)"/>
+      <g transform="rotate(-9 258 404)">
+        <rect x="204" y="393" width="108" height="22" rx="10" fill="#111315"/>
+        <rect x="212" y="398" width="92" height="4.6" rx="2.3" fill="#3DFFA0" opacity=".9" filter="url(#glow)"/>
+        <rect x="212" y="406" width="60" height="4.6" rx="2.3" fill="#3DFFA0" opacity=".5" filter="url(#glow)"/>
+      </g>
+      <!-- calor escapando pela lateral -->
+      <g fill="none" stroke="#3DFFA0" stroke-linecap="round" stroke-width="4">
+        <path d="M216 382 C206 358 222 346 212 322" stroke-opacity=".30"/>
+        <path d="M244 388 C234 366 250 354 240 332" stroke-opacity=".18"/>
+      </g>
+
+      <!-- sombra de contato -->
+      <ellipse cx="430" cy="452" rx="272" ry="20" fill="#101215" opacity=".7" filter="url(#blur6)"/>
+    </svg>
+  </div>
+
+  <div class="foot">
+    <img src="assets/logo-h.png" alt="Abdalla Tech">
+    <div class="swipe">Arrasta <span>→</span></div>
+  </div>
+</section>
+
+
+<!-- ==================== 2 · POEIRA ==================== -->
+<section class="slide" data-n="2">
+  <div class="kicker"><span class="num">01</span><span>A origem</span><i class="bar"></i></div>
+  <h2>Tudo começa<br>com <span class="mint">poeira</span>.</h2>
+  <p class="sub">Em 12 meses de uso normal o cooler entope. O ar quente que deveria sair <b>fica preso lá dentro.</b></p>
+
+  <div class="stage">
+    <svg width="880" height="500" viewBox="0 0 880 500">
+      <!-- corpo da grade -->
+      <g filter="url(#nm)"><rect x="40" y="40" width="620" height="420" rx="46" fill="url(#case)"/></g>
+      <rect x="40.8" y="40.8" width="618.4" height="418.4" rx="45.2" fill="none" stroke="#5A616B" stroke-opacity=".45" stroke-width="1.6"/>
+      <!-- vao rebaixado -->
+      <rect x="76" y="76" width="548" height="348" rx="26" fill="#131518"/>
+
+      <!-- helice girando la atras -->
+      <g transform="translate(350,250)">
+        <circle r="132" fill="#0D0F11"/>
+        <g fill="#31363E">
+          <path d="M0 -10 C56 -48 106 -34 116 8 C80 -10 36 -10 0 8 Z"/>
+          <path d="M8 5 C56 48 42 94 0 114 C14 78 11 35 -9 9 Z"/>
+          <path d="M-9 0 C-64 33 -109 11 -114 -30 C-81 -6 -39 -11 -3 -11 Z"/>
+        </g>
+        <circle r="27" fill="#3E444C"/><circle r="11" fill="#16191C"/>
+      </g>
+
+      <!-- ripas -->
+      <g>
+        <rect x="90" y="97"  width="520" height="30" rx="15" fill="url(#slat)"/>
+        <rect x="90" y="143" width="520" height="30" rx="15" fill="url(#slat)"/>
+        <rect x="90" y="189" width="520" height="30" rx="15" fill="url(#slat)"/>
+        <rect x="90" y="235" width="520" height="30" rx="15" fill="url(#slat)"/>
+        <rect x="90" y="281" width="520" height="30" rx="15" fill="url(#slat)"/>
+        <rect x="90" y="327" width="520" height="30" rx="15" fill="url(#slat)"/>
+        <rect x="90" y="373" width="520" height="30" rx="15" fill="url(#slat)"/>
+      </g>
+      <!-- brilho superior de cada ripa -->
+      <g fill="#666D78" opacity=".5">
+        <rect x="98" y="99"  width="504" height="4" rx="2"/><rect x="98" y="145" width="504" height="4" rx="2"/>
+        <rect x="98" y="191" width="504" height="4" rx="2"/><rect x="98" y="237" width="504" height="4" rx="2"/>
+        <rect x="98" y="283" width="504" height="4" rx="2"/><rect x="98" y="329" width="504" height="4" rx="2"/>
+        <rect x="98" y="375" width="504" height="4" rx="2"/>
+      </g>
+
+      <!-- ======= poeira ======= -->
+      <g clip-path="url(#ventClip)">
+        <!-- massa acumulada, translucida: as ripas continuam aparecendo por dentro -->
+        <g filter="url(#soft)" opacity=".58">
+          <path d="M76 298 C126 274 168 312 224 290 C282 267 322 308 384 286 C444 265 488 306 546 284 C580 271 606 294 624 282 L624 424 L76 424 Z" fill="#868D96"/>
+          <path d="M76 346 C130 328 170 360 230 342 C292 324 330 358 392 340 C452 323 494 356 552 338 C584 328 608 348 624 340 L624 424 L76 424 Z" fill="#A4ABB4"/>
+        </g>
+        <!-- vaos escuros reaparecendo atraves da poeira -->
+        <g fill="#101317" opacity=".34">
+          <rect x="90" y="311" width="520" height="16"/>
+          <rect x="90" y="357" width="520" height="16"/>
+          <rect x="90" y="403" width="520" height="21"/>
+        </g>
+        <g fill="#6B727C" opacity=".34">
+          <rect x="98" y="283" width="504" height="4" rx="2"/>
+          <rect x="98" y="329" width="504" height="4" rx="2"/>
+          <rect x="98" y="375" width="504" height="4" rx="2"/>
+        </g>
+        <!-- tufos agarrados nas ripas de cima -->
+        <g filter="url(#soft)" fill="#8A9199">
+          <path d="M112 106 C140 96 162 116 190 108 C212 102 226 118 219 130 C200 142 166 135 140 138 C118 141 104 126 112 106 Z" opacity=".5"/>
+          <path d="M360 152 C390 142 414 162 442 154 C462 148 476 164 469 176 C450 188 414 181 388 184 C366 187 352 172 360 152 Z" opacity=".44"/>
+          <path d="M496 208 C516 201 533 215 552 210 C567 206 577 219 572 228 C558 238 532 232 513 235 C498 237 490 225 496 208 Z" opacity=".36"/>
+          <path d="M122 238 C148 231 168 247 192 240 C211 235 223 249 218 259 C201 270 171 264 148 268 C129 271 116 255 122 238 Z" opacity=".4"/>
+        </g>
+        <!-- fibras: e isso que faz ler como poeira e nao como mancha -->
+        <g stroke="#C2C9D1" fill="none" stroke-linecap="round" stroke-width="2.2" opacity=".5">
+          <path d="M150 130 C168 116 186 126 202 110"/>
+          <path d="M250 286 C272 270 290 282 312 264"/>
+          <path d="M404 184 C424 170 442 180 462 164"/>
+          <path d="M486 328 C508 312 528 324 550 308"/>
+          <path d="M196 354 C218 340 234 350 256 334"/>
+          <path d="M320 336 C338 324 352 334 370 320"/>
+          <path d="M540 390 C558 378 572 388 590 374"/>
+          <path d="M120 300 C138 288 152 298 170 284"/>
+          <path d="M420 402 C438 390 452 400 470 386"/>
+          <path d="M268 214 C284 203 298 212 314 200"/>
+        </g>
+        <!-- grumos secos -->
+        <g fill="#B4BBC3" opacity=".38">
+          <ellipse cx="182" cy="318" rx="17" ry="7" transform="rotate(-8 182 318)"/>
+          <ellipse cx="386" cy="360" rx="21" ry="8" transform="rotate(6 386 360)"/>
+          <ellipse cx="530" cy="342" rx="15" ry="6" transform="rotate(-5 530 342)"/>
+          <ellipse cx="268" cy="396" rx="19" ry="7" transform="rotate(4 268 396)"/>
+        </g>
+      </g>
+      <clipPath id="ventClip"><rect x="76" y="76" width="548" height="348" rx="26"/></clipPath>
+
+      <!-- ======= ar que nao sai ======= -->
+      <g stroke="#3DFFA0" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="6">
+        <g opacity=".85"><path d="M684 168 h58"/><path d="M730 156 l14 12 -14 12"/></g>
+        <g opacity=".6"><path d="M684 250 h40"/><path d="M712 238 l14 12 -14 12"/></g>
+        <g opacity=".35"><path d="M684 332 h24"/><path d="M696 320 l14 12 -14 12"/></g>
+      </g>
+      <g stroke="#3DFFA0" stroke-width="8" stroke-linecap="round" opacity=".95">
+        <path d="M790 222 l52 52 M842 222 l-52 52"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="foot">
+    <img src="assets/logo-h.png" alt="Abdalla Tech">
+    <div class="dots"></div>
+  </div>
+</section>
+
+
+<!-- ==================== 3 · THROTTLING ==================== -->
+<section class="slide" data-n="3">
+  <div class="kicker"><span class="num">02</span><span>O sintoma</span><i class="bar"></i></div>
+  <h2>Não é velho.<br>Está <span class="mint">quente</span>.</h2>
+  <p class="sub">Acima de 90&nbsp;°C o processador reduz a própria velocidade para não se queimar.</p>
+
+  <div class="statline">
+    <div class="big">−40%</div>
+    <div class="lb">de desempenho — e você culpa a idade da máquina.</div>
+  </div>
+
+  <div class="stage">
+    <svg width="700" height="330" viewBox="0 0 700 330">
+      <g transform="translate(350,236)">
+        <!-- trilho -->
+        <path d="M-236 0 A236 236 0 0 1 236 0" fill="none" stroke="#1D2024" stroke-width="42" stroke-linecap="round"/>
+        <path d="M-236 0 A236 236 0 0 1 236 0" fill="none" stroke="#383D45" stroke-width="42" stroke-linecap="round" opacity=".28" transform="translate(0,-4)"/>
+        <!-- zona segura, apagada -->
+        <path d="M-236 0 A236 236 0 0 1 -20 -235" fill="none" stroke="#474D57" stroke-width="18" stroke-linecap="round"/>
+        <!-- zona critica -->
+        <path d="M96 -215 A236 236 0 0 1 236 0" fill="none" stroke="#3DFFA0" stroke-width="18" stroke-linecap="round" filter="url(#glow)"/>
+        <!-- marcacoes -->
+        <g stroke="#5A616B" stroke-width="4" stroke-linecap="round">
+          <path d="M-198 -68 l-26 -9"/><path d="M-148 -152 l-22 -15"/><path d="M-52 -212 l-9 -25"/>
+          <path d="M52 -212 l9 -25"/><path d="M148 -152 l22 -15"/><path d="M198 -68 l26 -9"/>
+        </g>
+        <!-- ponteiro cravado na zona critica -->
+        <g transform="rotate(72)">
+          <path d="M0 0 L0 -196" stroke="#12151A" stroke-width="14" stroke-linecap="round" opacity=".7"/>
+          <path d="M0 0 L0 -196" stroke="#E8EAEE" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="0" cy="-196" r="7" fill="#E8EAEE"/>
+        </g>
+        <circle r="34" fill="url(#steel)" filter="url(#nmS)"/>
+        <circle r="11" fill="#3DFFA0" filter="url(#glow)"/>
+        <!-- leitura -->
+        <text x="0" y="-96" text-anchor="middle" font-family="Bahnschrift,Segoe UI,sans-serif"
+              font-size="96" font-weight="700" fill="#E8EAEE" letter-spacing="-2">92°C</text>
+        <text x="0" y="-56" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace"
+              font-size="21" fill="#3DFFA0" letter-spacing="7">THROTTLING</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="foot">
+    <img src="assets/logo-h.png" alt="Abdalla Tech">
+    <div class="dots"></div>
+  </div>
+</section>
+
+
+<!-- ==================== 4 · PASTA TERMICA ==================== -->
+<section class="slide" data-n="4">
+  <div class="kicker"><span class="num">03</span><span>O prazo de validade</span><i class="bar"></i></div>
+  <h2>A pasta térmica<br><span class="mint">seca</span>.</h2>
+  <p class="sub">Entre 2 e 3 anos ela vira pó e para de transferir calor. A partir daí, <b>cada hora ligado é desgaste direto</b> na CPU e na GPU.</p>
+
+  <div class="stage">
+    <svg width="720" height="420" viewBox="0 0 720 420">
+      <!-- placa -->
+      <g filter="url(#nm)"><rect x="80" y="60" width="560" height="300" rx="36" fill="url(#steel2)"/></g>
+      <!-- trilhas -->
+      <g stroke="#3DFFA0" stroke-width="3" fill="none" opacity=".22" stroke-linecap="round">
+        <path d="M118 120 h84 v-32 h96"/><path d="M118 300 h64 v34 h120"/>
+        <path d="M602 130 h-78 v-42 h-92"/><path d="M602 292 h-58 v40 h-104"/>
+      </g>
+      <g fill="#3DFFA0" opacity=".45">
+        <circle cx="118" cy="120" r="5"/><circle cx="118" cy="300" r="5"/>
+        <circle cx="602" cy="130" r="5"/><circle cx="602" cy="292" r="5"/>
+      </g>
+
+      <!-- soquete -->
+      <rect x="196" y="118" width="328" height="184" rx="20" fill="#1C1F23"/>
+      <g fill="#2E333A">
+        <rect x="212" y="134" width="296" height="6" rx="3"/><rect x="212" y="290" width="296" height="6" rx="3"/>
+      </g>
+
+      <!-- die -->
+      <g filter="url(#nmS)">
+        <rect x="238" y="152" width="244" height="116" rx="12" fill="#31363D"/>
+      </g>
+
+      <!-- pasta ressecada, rachada -->
+      <g>
+        <rect x="250" y="163" width="220" height="94" rx="7" fill="#C9CCD1" opacity=".26"/>
+        <g stroke="#1E2126" stroke-width="2.6" fill="none" opacity=".85" stroke-linecap="round">
+          <path d="M250 196 L292 190 L318 210 L358 198 L392 214 L430 200 L470 208"/>
+          <path d="M292 163 L288 190 L272 214 L280 240 L266 257"/>
+          <path d="M358 163 L352 198 L366 226 L352 257"/>
+          <path d="M430 163 L424 200 L440 224 L428 257"/>
+          <path d="M250 232 L272 214 L318 210 L342 232 L392 214 L424 234 L470 228"/>
+        </g>
+        <!-- lascas soltas -->
+        <g fill="#C9CCD1" opacity=".3">
+          <path d="M262 274 l16 -6 6 12 -18 5 z"/><path d="M336 280 l20 -5 4 11 -21 6 z"/>
+          <path d="M438 276 l17 -7 7 12 -19 6 z"/>
+        </g>
+      </g>
+
+      <!-- calor preso -->
+      <g opacity=".85">
+        <path d="M296 146 C286 126 306 118 297 100" stroke="#3DFFA0" stroke-opacity=".4" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M360 142 C350 120 371 112 361 92" stroke="#3DFFA0" stroke-opacity=".6" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M424 146 C414 126 434 118 425 100" stroke="#3DFFA0" stroke-opacity=".4" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <!-- linha do tempo -->
+      <g transform="translate(80,392)">
+        <rect x="0" y="0" width="560" height="8" rx="4" fill="#1D2024"/>
+        <rect x="0" y="0" width="238" height="8" rx="4" fill="#3DFFA0" opacity=".85"/>
+        <circle cx="238" cy="4" r="12" fill="#31363D" filter="url(#nmS)"/>
+        <circle cx="238" cy="4" r="5" fill="#3DFFA0"/>
+        <text x="0" y="-14" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#69707A" letter-spacing="4">MONTAGEM</text>
+        <text x="560" y="-14" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#3DFFA0" letter-spacing="4">3 ANOS</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="foot">
+    <img src="assets/logo-h.png" alt="Abdalla Tech">
+    <div class="dots"></div>
+  </div>
+</section>
+
+
+<!-- ==================== 5 · RISCOS ==================== -->
+<section class="slide" data-n="5">
+  <div class="kicker"><span class="num">04</span><span>Os riscos</span><i class="bar"></i></div>
+  <h2 class="sm">O calor não para<br>no <span class="mint">processador</span>.</h2>
+
+  <div class="rows">
+    <div class="row">
+      <div class="ic"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3DFFA0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 12 Q3 17 4 22 Q4 25 7 25 h15 q3 0 3-3 Q26 17 25 12 q0-3-3-3 H7 q-3 0-3 3z"/><path d="M29 15 v4"/></svg></div>
+      <div class="tx">A bateria incha<small>E bateria inchada é risco real de incêndio.</small></div>
+    </div>
+    <div class="row">
+      <div class="ic"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3DFFA0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="16" height="16" rx="3"/><path d="M14 3v6M20 3v6M14 25v6M20 25v6M3 14h6M3 20h6M25 14h6M25 20h6"/></svg></div>
+      <div class="tx">A solda da GPU se solta<small>Tela preta, artefatos e travamento sem aviso.</small></div>
+    </div>
+    <div class="row">
+      <div class="ic"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3DFFA0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="7" width="26" height="20" rx="3"/><path d="M9 13h9M9 18h5"/><circle cx="24" cy="20" r="2.5"/></svg></div>
+      <div class="tx">O SSD falha por temperatura<small>E leva os seus arquivos junto.</small></div>
+    </div>
+    <div class="row">
+      <div class="ic"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#3DFFA0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10 q14 5 28 0 v14 q-14 5 -28 0z"/><path d="M9 15v3M15 16v3M21 16v3M27 15v3"/></svg></div>
+      <div class="tx">A carcaça e o teclado empenam<small>Teclas afundadas e touchpad desalinhado.</small></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <img src="assets/logo-h.png" alt="Abdalla Tech">
+    <div class="dots"></div>
+  </div>
+</section>
+
+
+<!-- ==================== 6 · PREVENTIVA x CORRETIVA ==================== -->
+<section class="slide" data-n="6">
+  <div class="kicker"><span class="num">05</span><span>A conta</span><i class="bar"></i></div>
+  <h2 class="sm">Preventiva<br><span class="mint">x</span> corretiva.</h2>
+
+  <div class="vs">
+    <div class="col good">
+      <div class="tag">1x por ano</div>
+      <h3>Preventiva</h3>
+      <ul>
+        <li>Limpeza interna completa</li>
+        <li>Troca da pasta térmica</li>
+        <li>Leva algumas horas</li>
+        <li>Você marca o dia</li>
+      </ul>
+      <div class="art">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle cx="75" cy="75" r="62" fill="url(#steel)" filter="url(#nmS)"/>
+          <circle cx="75" cy="75" r="47" fill="#1E2126"/>
+          <g fill="#31363D" transform="translate(75,75)">
+            <path d="M0 -5 C24 -22 46 -16 51 3 C35 -5 16 -4 0 4 Z"/>
+            <path d="M4 2 C25 22 19 43 0 51 C7 35 5 16 -4 4 Z"/>
+            <path d="M-4 0 C-28 15 -47 5 -50 -13 C-35 -2 -17 -5 -1 -5 Z"/>
+          </g>
+          <circle cx="75" cy="75" r="13" fill="#3A3F47"/>
+          <circle cx="75" cy="75" r="5" fill="#3DFFA0" filter="url(#glow)"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="tag">Quando ainda dá</div>
+      <h3>Corretiva</h3>
+      <ul>
+        <li>Placa-mãe comprometida</li>
+        <li>Reballing sem garantia</li>
+        <li>Semanas na bancada</li>
+        <li>A urgência escolhe o dia</li>
+      </ul>
+      <div class="art">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <g stroke="#7A828C" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7">
+            <path d="M62 32 C54 20 68 14 60 2"/>
+            <path d="M89 32 C81 22 94 16 87 4"/>
+          </g>
+          <g stroke="#4A505A" stroke-width="4.5" stroke-linecap="round">
+            <path d="M58 42V32M75 42V32M92 42V32M58 118v10M75 118v10M92 118v10"/>
+            <path d="M40 58H30M40 75H30M40 92H30M120 58h10M120 75h10M120 92h10"/>
+          </g>
+          <rect x="40" y="40" width="70" height="70" rx="12" fill="url(#steel2)" filter="url(#nmS)"/>
+          <rect x="52" y="52" width="46" height="46" rx="7" fill="#1A1D21"/>
+          <path d="M56 92 C52 74 66 66 62 54 C74 58 84 50 92 58 C98 70 90 80 96 92 C84 98 66 96 56 92 Z" fill="#0A0B0D"/>
+          <ellipse cx="76" cy="76" rx="15" ry="12" fill="#000" opacity=".85"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <p class="vsnote">Uma delas você agenda.<br><b>A outra te pega no meio da entrega.</b></p>
+
+  <div class="foot">
+    <img src="assets/logo-h.png" alt="Abdalla Tech">
+    <div class="dots"></div>
+  </div>
+</section>
+
+
+<!-- ==================== 7 · CTA ==================== -->
+<section class="slide" data-n="7">
+  <div class="kicker"><span class="num">06</span><span>O checklist</span><i class="bar"></i></div>
+  <h2 class="sm">Quando foi<br>a <span class="mint">última vez</span>?</h2>
+
+  <div class="rows">
+    <div class="row">
+      <div class="ic"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#3DFFA0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16 l7 7 L25 8"/></svg></div>
+      <div class="tx">Limpeza interna<small>A cada 12 meses.</small></div>
+    </div>
+    <div class="row">
+      <div class="ic"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#3DFFA0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16 l7 7 L25 8"/></svg></div>
+      <div class="tx">Troca da pasta térmica<small>A cada 2 anos.</small></div>
+    </div>
+    <div class="row">
+      <div class="ic"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#3DFFA0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16 l7 7 L25 8"/></svg></div>
+      <div class="tx">Base elevada e ventilada<small>Nunca em cima de cama ou cobertor.</small></div>
+    </div>
+    <div class="row">
+      <div class="ic"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#3DFFA0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16 l7 7 L25 8"/></svg></div>
+      <div class="tx">Backup dos arquivos<small>Todo mês, sem desculpa.</small></div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="#3DFFA0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none">
+      <path d="M11 8h30q5 0 5 5v19q0 5-5 5H23l-11 9v-9q-6 0-6-5V13q0-5 5-5z"/>
+    </svg>
+    <div class="txt">Manda <b>“PREVENTIVA”</b> na DM<small>que eu avalio o seu notebook.</small></div>
+  </div>
+
+  <div class="foot">
+    <img src="assets/logo-h.png" alt="Abdalla Tech">
+    <div class="dots"></div>
+  </div>
+</section>
+
+<script>
+// pontinhos de progresso
+document.querySelectorAll('.slide').forEach(s=>{
+  const d=s.querySelector('.dots'); if(!d) return;
+  const n=+s.dataset.n;
+  for(let i=1;i<=7;i++){ const e=document.createElement('i'); if(i===n) e.className='on'; d.appendChild(e); }
+});
+// modo solo para captura: ?s=N
+const q=new URLSearchParams(location.search).get('s');
+if(q){
+  document.body.classList.add('solo');
+  const t=document.querySelector('.slide[data-n="'+q+'"]');
+  if(t) t.classList.add('on');
+}
+</script>
